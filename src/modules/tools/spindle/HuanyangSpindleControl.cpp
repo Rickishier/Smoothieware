@@ -142,11 +142,11 @@ void HuanyangSpindleControl::report_speed()
     }
 
     // prepare data for the get speed command
-    char get_speed_msg[8] = { 0x01, 0x04, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    char get_speed_msg[6] = { 0x01, 0x03, 0x10, 0x01, 0x00, 0x01 };
     // calculate CRC16 checksum
     unsigned int crc = modbus->crc16(get_speed_msg, sizeof(get_speed_msg)-2);
-    get_speed_msg[6] = crc & 0xFF;
-    get_speed_msg[7] = (crc >> 8);
+    get_speed_msg[5] = crc & 0xFF;
+    get_speed_msg[6] = (crc >> 8);
 
     // enable transmitter
     modbus->dir_output->set();
@@ -163,7 +163,7 @@ void HuanyangSpindleControl::report_speed()
     // wait for the complete message to be received
     modbus->delay((int) ceil(8 * modbus->delay_time));
     // prepare an array for the answer
-    char speed[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    char speed[7] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
    
     // read the answer into the buffer
     for(int i=0; i<8; i++) {
