@@ -13,58 +13,40 @@
 
     Parameters
 
-    PD001   2   RS485 Control of run commands
-    PD002   2   RS485 Control of operating frequency
-    PD023   1   Reverse run enabled
-    PD163   1   RS485 Address: 1
-    PD164   1   RS485 Baud rate: 9600
-    PD165   3   RS485 Mode: RTU, 8N1
+    P003    9   main frequency cource
+    PD00    5   RS485 Baud rate: 9600
+    PD01    3   RS485 data format: 8N1
+    PD02    2   Local Address: 1
+    
 
-    == Function Read == 
+   
 
-    ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x01    0x03    0xA5    0x00 0x00   0x2C 0x6D       Read PD165 (165=0xA5)
-
-    == Function Write ==
+    == Function Write speed ==
 
     ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x02    0x03    0x03    0x09 0xC4   0x8F 0x8D       Write PD003 (0x9C4 = 2500 = 25.00Hz)
+    0x01    0x06    0x10    0x00    0x17 0x70   0x83 0x1E       Write frequentie speed (0x17 0x70 = 6000 = 240.00Hz)
 
     == Control Write ==
 
-    ADDR    CMD     LEN     DATA    CRC
-    0x01    0x03    0x01    0x01    0x31 0x88                   Start spindle clockwise
+    ADDR    CMD     LEN     PAR     DATA        CRC
+    0x01    0x06    0x20    0x00    0x00 0x01   0x43 0xCA                   Start spindle clockwise
 
-    ADDR    CMD     LEN     DATA    CRC
-    0x01    0x03    0x01    0x08    0xF1 0x8E                   Stop spindle
+    ADDR    CMD     LEN     PAR     DATA        CRC
+    0x01    0x06    0x20    0x00    0x00 0x06   0x02 0x08                   Stop spindle
 
-    ADDR    CMD     LEN     DATA    CRC
-    0x01    0x03    0x01    0x11    0x30 0x44                   Start spindle counter-clockwise
+    ADDR    CMD     LEN     PAR     DATA        CRC
+    0x01    0x06    0x20    0x00    0x00 0x02   0x03 0xCB                   Start spindle counter-clockwise
 
     == Control Read ==
 
     ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x04    0x03    0x00    0x00 0x00   0xF0 0x4E       Read Frequency
+    0x01    0x03    0x10    0x01    0x00 0x01   0xD1 0x0A       Read Frequency
 
     ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x04    0x03    0x02    0x00 0x00   0x51 0x8E       Read Output Current
+    0x01    0x03    0x10    0x04    0x00 0x01   0xc1 0x0B       Read Output Current
 
     ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x04    0x03    0x03    0x00 0x00   0x00 0x4E       Read Rotation
-
-    ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x04    0x03    0x04    0x00 0x00   0xB1 0x8F       Read DC Volatge
-
-    ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x04    0x03    0x05    0x00 0x00   0xE0 0x4F       Read AC Voltage
-
-    ADDR    CMD     LEN     PAR     DATA        CRC
-    0x01    0x04    0x03    0x07    0x00 0x00   0x41 0x8F       Read Temperature
-
-    == Control Read ==
-
-    ADDR    CMD     LEN     DATA        CRC
-    0x01    0x05    0x02    0x09 0xC4   0xBF 0x0F               Write Frequency (0x9C4 = 2500 = 25.00HZ)
+    0x01    0x03    0x10    0x07    0x00 0x01   0x31 0x0B       Read Rotation
 
 */
 
@@ -79,7 +61,7 @@
 void HuanyangSpindleControl::turn_on() 
 {
     // prepare data for the spindle off command
-    char turn_on_msg[6] = { 0x01, 0x03, 0x01, 0x01, 0x00, 0x00 };
+    char turn_on_msg[6] = { 0x01, 0x06, 0x20, 0x00, 0x00, 0x01 };
     // calculate CRC16 checksum
     unsigned int crc = modbus->crc16(turn_on_msg, sizeof(turn_on_msg)-2);
     turn_on_msg[4] = crc & 0xFF;
@@ -103,7 +85,7 @@ void HuanyangSpindleControl::turn_on()
 void HuanyangSpindleControl::turn_off() 
 {
     // prepare data for the spindle off command
-    char turn_off_msg[6] = { 0x01, 0x03, 0x01, 0x08, 0x00, 0x00 };
+    char turn_off_msg[6] = { 0x01, 0x06, 0x20, 0x00, 0x00, 0x06 };
     // calculate CRC16 checksum
     unsigned int crc = modbus->crc16(turn_off_msg, sizeof(turn_off_msg)-2);
     turn_off_msg[4] = crc & 0xFF;
@@ -128,7 +110,7 @@ void HuanyangSpindleControl::set_speed(int target_rpm)
 {
 
     // prepare data for the set speed command
-    char set_speed_msg[7] = { 0x01, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00 };
+    char set_speed_msg[6] = { 0x01, 0x06, 0x10, 0x00, 0x00, 0x00 };
     // convert RPM into Hz
     unsigned int hz = target_rpm / 60 * 100; 
     set_speed_msg[3] = (hz >> 8);
