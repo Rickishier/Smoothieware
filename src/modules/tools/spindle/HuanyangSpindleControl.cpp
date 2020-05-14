@@ -61,17 +61,17 @@
 void HuanyangSpindleControl::turn_on() 
 {
     // prepare data for the spindle off command
-    char turn_on_msg[6] = { 0x01, 0x06, 0x20, 0x00, 0x00, 0x01 };
+    char turn_on_msg[8] = { 0x01, 0x06, 0x20, 0x00, 0x00, 0x01, 0x43, 0xCA};
     // calculate CRC16 checksum
-    unsigned int crc = modbus->crc16(turn_on_msg, sizeof(turn_on_msg)-2);
-    turn_on_msg[4] = crc & 0xFF;
-    turn_on_msg[5] = (crc >> 8);
+    // unsigned int crc = modbus->crc16(turn_on_msg, sizeof(turn_on_msg)-2);
+    // turn_on_msg[4] = crc & 0xFF;
+    // turn_on_msg[5] = (crc >> 8);
 
     // enable transmitter
     modbus->dir_output->set();
     modbus->delay(1);
     // send the actual message
-    modbus->serial->write(turn_on_msg, sizeof(turn_on_msg));
+    modbus->serial->write(turn_on_msg/* , sizeof(turn_off_msg) */);
     // wait a calculated time for the data to be sent 
     modbus->delay((int) ceil(sizeof(turn_on_msg) * modbus->delay_time));
     // disable transmitter
@@ -85,17 +85,17 @@ void HuanyangSpindleControl::turn_on()
 void HuanyangSpindleControl::turn_off() 
 {
     // prepare data for the spindle off command
-    char turn_off_msg[6] = { 0x01, 0x06, 0x20, 0x00, 0x00, 0x06 };
+    char turn_off_msg[6] = { 0x01, 0x06, 0x20, 0x00, 0x00, 0x06, 0x02, 0x08 };
     // calculate CRC16 checksum
-    unsigned int crc = modbus->crc16(turn_off_msg, sizeof(turn_off_msg)-2);
-    turn_off_msg[4] = crc & 0xFF;
-    turn_off_msg[5] = (crc >> 8);
+    // unsigned int crc = modbus->crc16(turn_off_msg, sizeof(turn_off_msg)-2);
+    // turn_off_msg[4] = crc & 0xFF;
+    // turn_off_msg[5] = (crc >> 8);
 
     // enable transmitter
     modbus->dir_output->set();
     modbus->delay(1);
     // send the actual message
-    modbus->serial->write(turn_off_msg, sizeof(turn_off_msg));
+    modbus->serial->write(turn_off_msg/* , sizeof(turn_off_msg) */);
     // wait a calculated time for the data to be sent 
     modbus->delay((int) ceil(sizeof(turn_off_msg) * modbus->delay_time));
     // disable transmitter
@@ -142,11 +142,11 @@ void HuanyangSpindleControl::report_speed()
     }
 
     // prepare data for the get speed command
-    char get_speed_msg[6] = { 0x01, 0x03, 0x10, 0x01, 0x00, 0x01 };
+    char get_speed_msg[6] = {0x01, 0x03, 0x10, 0x01, 0x00, 0x01, 0xD1, 0x0A};
     // calculate CRC16 checksum
-    unsigned int crc = modbus->crc16(get_speed_msg, sizeof(get_speed_msg)-2);
-    get_speed_msg[5] = crc & 0xFF;
-    get_speed_msg[6] = (crc >> 8);
+    // unsigned int crc = modbus->crc16(get_speed_msg, sizeof(get_speed_msg)-2);
+    // get_speed_msg[5] = crc & 0xFF;
+    // get_speed_msg[6] = (crc >> 8);
 
     // enable transmitter
     modbus->dir_output->set();
